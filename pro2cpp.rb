@@ -8,17 +8,19 @@ DOXYGEN_COMMENT    = ";/"
 
 class Function
 
-    attr_accessor :name, :compulsoryParameters, :optionalParameters
+    attr_accessor :name, :functionIdentifier
+    attr_accessor :compulsoryParameters, :optionalParameters
     attr_accessor :returnType
 
     def initialize( string, functionIdentifier )
 
-        @returnType = (functionIdentifier == "PRO"? "void" : "")
+        @functionIdentifier = functionIdentifier
+        @returnType = (@functionIdentifier == "PRO"? "void" : "")
         @compulsoryParameters = Array.new
         @optionalParameters   = Array.new
 
         # Remove function identifier
-        functionRegexp = Regexp.new("#{functionIdentifier} ", true)
+        functionRegexp = Regexp.new("#{@functionIdentifier} ", true)
         string.sub!( functionRegexp,'')
 
         # Strip the different parameters and options using comma
@@ -59,45 +61,43 @@ class Function
 
 end
 
+# Input check
+exit if( ARGV.size == 0 ) 
 
-# Search for files with IDL extension
+# Define input file
+proFile = ARGV[0]
 
-# Searches all the IDL files 
-proFiles = File.join("**", "*.#{IDL_FILE_EXTENSION}")
+File.open( proFile ).each do |fileLine|
 
-# Processes all the IDL files (converts to pseudo-C)
-Dir.glob( proFiles ) do |proFile| 
+    # Comments should follow this structure
+    # ;/ @brief Including brief description
+    # ;/ Detailed description or in-function comment
 
-    File.open( proFile ).each do |fileLine|
+    # Remove leading and trailing whitespaces
+    strippedFileLine = fileLine.strip
 
-        # Comments should follow this structure
-        # ;/ @brief Including brief description
-        # ;/ Detailed description or in-function comment
+    # Creation of Regexp strings for the Brief and detailed
+    # markers
+    doxygenCommentRegexp = Regexp.new("^#{DOXYGEN_COMMENT}")
 
-        # Remove leading and trailing whitespaces
-        strippedFileLine = fileLine.strip
-
-        # Creation of Regexp strings for the Brief and detailed
-        # markers
-        doxygenCommentRegexp = Regexp.new("^#{DOXYGEN_COMMENT}")
-
-        if( strippedFileLine.match( /^PRO/i )      != nil ) then 
-            function = Function.new( fileLine, "PRO" ).printPrototype
-            print "{\n"
-        end
-
-        if( strippedFileLine.match( /^FUNCTION/i ) != nil ) then
-            function = Function.new( fileLine, "FUNCTION" ).printPrototype
-            print "{\n"
-        end
-
-        if( strippedFileLine.match( /^END/i )      != nil ) then
-            print "}\n"
-        end
-        if( strippedFileLine.match( doxygenCommentRegexp )  != nil ) then
-            print fileLine.gsub(/;/,"//")
-        end
-
+    if( strippedFileLine.match( /^PRO/i )      != nil ) then 
+        function = Function.new( fileLine, "PRO" ).printPrototype
+        print "{\n"
+        print "    /// This method is a PROCEDURE (i.e. does not return a value)\n\n"
     end
+
+    if( strippedFileLine.match( /^FUNCTION/i ) != nil ) then
+        function = Function.new( fileLine, "FUNCTION" ).printPrototype
+        print "{\n"
+        print "    /// This method is a FUNCTION (i.e. returns a value)\n\n"
+    end
+
+    if( strippedFileLine.match( /^END/i )      != nil ) then
+        print "}\n"
+    end
+    if( strippedFileLine.match( doxygenCommentRegexp )  != nil ) then
+        print fileLine.gsub(/;/,"//")
+    end
+
 end
 

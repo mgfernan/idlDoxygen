@@ -10,8 +10,8 @@
 ;/ @param option1    O1 (keyword)
 ;/ @return nada
 PRO procedure_1, parameter1, parameter2, option1=option1
-    ;! Description of line 1
-    ;! Description of line 1
+    ;/ Description of line 1
+    ;/ Description of line 1
     ; line 3
 END
 
@@ -22,14 +22,14 @@ pro procedure_2, parameter1, parameter2, option1=option1
 end
 
 
-FUNCTION procedure_3, parameter1, parameter2, option1=option1
+FUNCTION function_1, parameter1, parameter2, option1=option1
     ; line 1
     ; line 2
     ; line 3
     return 2.0 
 END
 
-function procedure_4, parameter1, parameter2
+function function_2, parameter1, parameter2
     ; line 1
     ; line 2
     ; line 3

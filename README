@@ -1,0 +1,7 @@
+This is a set of files including a ruby script, doxygen template 
+configuration file and several sample IDL code that will serve you as 
+a guide to transfer your IDL code to something that Doxygen can parse 
+in order to generate documentation. 
+
+Note that IDL stands for Interactive Data Language, 
+not to be confused with Interface Description Language!
