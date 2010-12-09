@@ -36,3 +36,23 @@ function function_2, parameter1, parameter2
     return 2.0 
 END
 
+function function_3_with_multiline, parameter1, parameter2, $
+                                    parameter3, parameter4, $
+                                    option1=option1,$
+                                    option2=option2
+    ; line 1
+    ; line 2
+    ; line 3
+    return 2.0
+end
+
+pro procedure_3_with_multiline, parameter1, parameter2, $
+                                parameter3, parameter4, $
+                                option1=option1,$
+                                option2=option2
+    ; line 1
+    ; line 2
+    ; line 3
+    return 2.0
+end
+

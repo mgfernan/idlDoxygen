@@ -61,13 +61,24 @@ class Function
 
 end
 
+def is_multiline( string )
+
+    clean_string = string.strip
+    clean_string_length = clean_string.size
+    last_character = clean_string[ clean_string_length-1 ]
+    return ( last_character.chr=='$' )
+
+end
+
 # Input check
 exit if( ARGV.size == 0 ) 
 
 # Define input file
-proFile = ARGV[0]
+proFileName = ARGV[0]
 
-File.open( proFile ).each do |fileLine|
+proFile = File.open( proFileName )
+
+proFile.each do |fileLine|
 
     # Comments should follow this structure
     # ;/ @brief Including brief description
@@ -80,16 +91,29 @@ File.open( proFile ).each do |fileLine|
     # markers
     doxygenCommentRegexp = Regexp.new("^#{DOXYGEN_COMMENT}")
 
-    if( strippedFileLine.match( /^PRO/i )      != nil ) then 
-        function = Function.new( fileLine, "PRO" ).printPrototype
-        print "{\n"
-        print "    /// This method is a PROCEDURE (i.e. does not return a value)\n\n"
-    end
+    if( strippedFileLine.match( /^FUNCTION/i ) != nil ||
+        strippedFileLine.match( /^PRO/i      ) != nil ) then
 
-    if( strippedFileLine.match( /^FUNCTION/i ) != nil ) then
-        function = Function.new( fileLine, "FUNCTION" ).printPrototype
+        function_type = ( strippedFileLine.match( /^PRO/i )!=nil ? "PRO" : "FUNCTION" )
+
+        string_with_function = strippedFileLine 
+
+        while is_multiline( string_with_function ) do
+
+            # Remove last character (that contains the $ character)
+            string_with_function = string_with_function[0...string_with_function.size-1]
+            
+            # Read next line and remove the leading and trailing spaces
+            next_line = proFile.readline.strip
+
+            # Append line to the function holding the string
+            string_with_function << next_line
+
+        end
+
+        function = Function.new( string_with_function, function_type ).printPrototype
         print "{\n"
-        print "    /// This method is a FUNCTION (i.e. returns a value)\n\n"
+        print "    /// This method is a #{function_type} (i.e. returns a value)\n\n"
     end
 
     if( strippedFileLine.match( /^END/i )      != nil ) then
