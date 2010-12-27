@@ -48,8 +48,11 @@ class Function
     def printPrototype
 
         prototype = "#{@returnType} #{@name}( "
-        [@compulsoryParameters,@optionalParameters].flatten.each do |parameter|
-            prototype << "#{parameter}, "
+        [@compulsoryParameters].flatten.each do |parameter|
+            prototype << "argument #{parameter}, "
+        end
+        [@optionalParameters].flatten.each do |parameter|
+            prototype << "optional #{parameter}, "
         end
         prototype << ")\n"
 
