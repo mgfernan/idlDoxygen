@@ -4,7 +4,7 @@
 # per each function or method
 # Usage is split_idl_file.rb pro_file_to_split
 
-require 'ftools'
+require 'fileutils'
 
 if( ARGV.size == 0 ) then
     print "Usage: split_idl_file.rb pro_file_to_split.pro\n"
